@@ -1,0 +1,29 @@
+name: deploy-payments
+
+on:
+  push:
+    branch:
+      - master:
+    paths:
+      - 'payments/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd payments && docker build -t mauricioleals5/payments .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker push mauricioleals5/payments
+      # NOTE: Authenticate and install doctl
+      # - uses: digitalocean/action-doctl@v2
+      #   with:
+      #     token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      # NOTE: Get connection credentials for DO k8s cluster
+      # TODO: Create cluster in DO
+      # - run: doctl kubernetes cluster kubeconfig save <cluster_name>
+      # NOTE: Reach inside the cluster and restart the payments deployment
+      # - run: kubectl rollout restart deployment payments-depl
