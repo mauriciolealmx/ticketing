@@ -1,0 +1,64 @@
+# Runnig the app
+skaffold dev at where skaffold.yaml is.
+
+1. Add the host to /etc/hosts
+2. thisisunsafe in chorme for insecure (not https) connection
+3. Turn SSL certificate verification off in Postman
+
+# Create k8s secret
+
+kubectl create secret generic jwt-secret --from-literal=JWT_KEY=asdf
+kubectl create secret generic stripe-secret --from-literal=STRIPE_KEY=actual-secret...
+kubectl get secrets
+
+Using a common lib called @mlvtickets/common
+
+Port forwarding for NATS:
+kubectl port-forward nats-depl-5b6f5dfb96-jtn7k 4222:4222
+
+Check NATS information in monitoring port (browser):
+kubectl port-forward nats-depl-5b6f5dfb96-jtn7k 8222:8222
+localhost:8222/streaming
+
+subscriptions:
+localhost:8222/streaming/channelsz?subs=1
+
+Mongo:
+Look into a pods database
+
+- kubectl get pods
+- kubectl exec -it [pod-id] mongo
+
+New Micro-Service creation steps:
+- Copy from tickets 
+    - tsconfig,
+    - package,
+    - Dockerfile 
+    - .dockerignore
+- Pase into new microS dir (e.g. payments)
+- Copy from tickets
+    - __mocks__
+    - test
+    - app.ts
+    - index.ts
+    - nats-wrapper.ts
+- Update files
+    e.g. app.ts is trying to use routes
+- Create a Docker image
+    - docker build -t mauricioleals5/payments . <-- watch the dot
+    - Push image (Maybe?): docker push mauricioleals5/payments
+- Add entry to Skaffold yaml
+- Create k8s Deployment file and copy content of tickets-depl.yaml
+    e.g payments-depl.yaml
+    - Update all references from tickets to payments
+- Create Mongo deployment file and copy contents from tickets-mongo...
+    e.g. payments-mongo-depl.yaml
+    - Update all references from tickets to payments
+- Add backend to ingress-srv.yaml
+    need to be able to access /api/payments/?(.*)
+
+
+Creating a new event:
+- new subject
+- new interface
+- export from common index.ts
