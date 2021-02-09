@@ -14,7 +14,6 @@ declare global {
 
 let mongo: any;
 beforeAll(async () => {
-  // TODO: Handle better
   process.env.JWT_KEY = 'random-key';
 
   mongo = new MongoMemoryServer();
@@ -45,10 +44,7 @@ global.signup = async () => {
 
   const response = await request(app)
     .post('/api/users/signup')
-    .send({
-      email,
-      password,
-    })
+    .send({ email, password })
     .expect(201);
 
   const cookie = response.get('Set-Cookie');
