@@ -1,9 +1,6 @@
-import mongoose from 'mongoose';
-import request from 'supertest';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import jwt from 'jsonwebtoken';
-
-import { app } from '../app';
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 declare global {
   namespace NodeJS {
@@ -17,7 +14,6 @@ jest.mock('../nats-wrapper');
 
 let mongo: any;
 beforeAll(async () => {
-  // TODO: Handle better
   process.env.JWT_KEY = 'random-key';
 
   mongo = new MongoMemoryServer();
@@ -50,9 +46,7 @@ global.signup = () => {
   };
 
   const token = jwt.sign(payload, process.env.JWT_KEY!);
-
   const session = { jwt: token };
-
   const sessionJSON = JSON.stringify(session);
 
   const base64 = Buffer.from(sessionJSON).toString('base64');

@@ -1,37 +1,41 @@
 import mongoose from 'mongoose';
 
 import { app } from './app';
-import { OrderCancelledListener } from './events/listeners/order-cancelled-event';
+import { OrderCancelledListener } from './events/listeners/order-cancelled-listener';
 import { OrderCreatedListener } from './events/listeners/order-created-listener';
 import { natsWrapper } from './nats-wrapper';
 
 const start = async () => {
-  if (!process.env.JWT_KEY) {
+  const {
+    JWT_KEY,
+    MONGO_URI,
+    NATS_CLIENT_ID,
+    NATS_CLUSTER_ID,
+    NATS_URL,
+  } = process.env;
+
+  if (!JWT_KEY) {
     throw new Error('JWT_KEY must be defined');
   }
 
-  if (!process.env.MONGO_URI) {
+  if (!MONGO_URI) {
     throw new Error('MONGO_URI must be defined');
   }
 
-  if (!process.env.NATS_CLIENT_ID) {
+  if (!NATS_CLIENT_ID) {
     throw new Error('NATS_CLIENT_ID must be defined');
   }
 
-  if (!process.env.NATS_URL) {
+  if (!NATS_URL) {
     throw new Error('NATS_URL must be defined');
   }
 
-  if (!process.env.NATS_CLUSTER_ID) {
+  if (!NATS_CLUSTER_ID) {
     throw new Error('NATS_CLUSTER_ID must be defined');
   }
 
   try {
-    await natsWrapper.connect(
-      process.env.NATS_CLUSTER_ID,
-      process.env.NATS_CLIENT_ID,
-      process.env.NATS_URL
-    );
+    await natsWrapper.connect(NATS_CLUSTER_ID, NATS_CLIENT_ID, NATS_URL);
 
     natsWrapper.client.on('close', () => {
       console.log('NATS connection closed!');
@@ -44,7 +48,7 @@ const start = async () => {
     new OrderCreatedListener(natsWrapper.client).listen();
     new OrderCancelledListener(natsWrapper.client).listen();
 
-    await mongoose.connect(process.env.MONGO_URI, {
+    await mongoose.connect(MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
