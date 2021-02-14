@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import StripeCheckout from 'react-stripe-checkout';
 import Router from 'next/router';
+
+import PaypalButton from '../../components/paypalButton/paypalButton';
 import useRequest from '../../hooks/use-request';
 
 // currentUser comes from the app component
@@ -44,6 +46,7 @@ const OrderShow = ({ order, currentUser }) => {
         amount={order.ticket.price * 100}
         email={currentUser.email}
       />
+      <PaypalButton amount={order.ticket.price} orderId={order.id} />
       {errors}
     </div>
   );
